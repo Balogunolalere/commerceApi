@@ -1,5 +1,5 @@
 # auth.py
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 from core.security import (
@@ -7,7 +7,7 @@ from core.security import (
     create_access_token,
     decode_access_token,
     get_current_user,
-    get_password_hash
+    get_password_hash,
 )
 from services.email import (
     send_verification_email,
@@ -106,11 +106,6 @@ def reset_password(token: str, new_password: str):
      # Return a success message 
      return {"message": "Password reset successfully"}
 
-# Define an endpoint for logging out
-@router.post("/logout")
-def logout():
-    return {"message": "Logged out"}
-
 # get the current user
 @router.get("/me", response_model=schemas.User)
 def read_users_me(current_user: schemas.User = Depends(get_current_user)):
@@ -157,3 +152,4 @@ def demote_user(user_key: str, current_user: schemas.User = Depends(get_current_
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is not admin")
     user = crud.update_user(user_key, schemas.UserUpdate(is_admin=False))
     return user
+
