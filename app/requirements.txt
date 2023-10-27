@@ -1,6 +1,7 @@
 fastapi
 uvicorn
-pyjwt
 python-multipart
 deta
 pydantic
+python-jose
+passlib[cryptography]
