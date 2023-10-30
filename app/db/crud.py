@@ -6,41 +6,35 @@ from typing import Optional
 
 
 
-# Create a new product in the database
+# Update the create_product function to include a category field
 def create_product(product: schemas.ProductCreate):
-    # Generate a unique key for the product
     key = f"product_{uuid4().hex}"
-    # Create a Product instance from the schema data and the key
+    # get category from productcreate and convert to category instance and add key for categories
+    category_dict = product.category.dict()
+    category_dict['key'] = f"category_{uuid4().hex}"
+    category_ = base.Category(**category_dict)
     product = base.Product(
         key=key,
         name=product.name,
         description=product.description,
         price=product.price,
         image=product.image,
+        category=category_  # new field
     )
-    # Put the product in the database
     base.products_db.put(product.dict())
-    # Return the product
+    base.categories_db.put(category_.dict())
     return product
 
-# Get all products from the database with optional filters
 def get_products(category: Optional[str] = None, min_price: Optional[float] = None, max_price: Optional[float] = None):
-    # Build a query string with the filters applied (or empty if no filters)
-    query = ""
+    query = {}
     if category:
-        query += f"category?contains={category} "
-    if min_price:
-        query += f"price?gte={min_price} "
-    if max_price:
-        query += f"price?lte={max_price} "
-    
-    # Fetch all products from the database that match the query as a list of dictionaries (or all products if no query)
+        query["category.name?contains"] = category
+    if min_price is not None:
+        query["price?gte"] = min_price
+    if max_price is not None:
+        query["price?lte"] = max_price
     products = base.products_db.fetch(query).items
-
-    # Convert each dictionary to a Product instance 
     products = [base.Product(**product) for product in products]
-
-    # Return the products 
     return products
 
 # Get a product by key from the database 

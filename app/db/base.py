@@ -7,6 +7,20 @@ from core.config import settings
 # Initialize Deta with your project key
 deta = Deta(settings.deta_app_key)
 
+# Create a Deta Base instance for categories
+categories_db = deta.Base("ecommerce_categories")
+
+# Define a Pydantic model for the Category entity
+class Category(BaseModel):
+    # Use key as the primary identifier
+    key: str
+    name: str
+    description: str
+
+    # Define a string representation of the model
+    def __repr__(self):
+        return f"<Category(key={self.key}, name={self.name}, description={self.description})>"
+
 # Create a Deta Base instance for products
 products_db = deta.Base("ecommerce_products")
 
@@ -18,10 +32,11 @@ class Product(BaseModel):
     description: str
     price: float
     image: str
+    category: Category  # new field
 
     # Define a string representation of the model
     def __repr__(self):
-        return f"<Product(key={self.key}, name={self.name}, description={self.description}, price={self.price}, image={self.image})>"
+        return f"<Product(key={self.key}, name={self.name}, description={self.description}, price={self.price}, image={self.image}, category={self.category})>"
 
 # Create a Deta Base instance for users
 users_db = deta.Base("ecommerce_users")
@@ -71,3 +86,4 @@ class Order(BaseModel):
     # Define a string representation of the model
     def __repr__(self):
         return f"<Order(key={self.key}, user_key={self.user_key}, order_id={self.order_id}, items={self.items}, total={self.total}, status={self.status})>"
+

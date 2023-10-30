@@ -2,12 +2,28 @@
 from pydantic import BaseModel
 from typing import Optional
 
+class Category(BaseModel):
+    key: str
+    name: str
+    description: str
+
+# Define a schema for creating a category
+class CategoryCreate(BaseModel):
+    name: str
+    description: str
+        
+# Define a schema for updating a category
+class CategoryUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+
 # Define a schema for creating a product
 class ProductCreate(BaseModel):
     name: str
     description: str
     price: float
     image: str
+    category: CategoryCreate
 
 # Define a schema for updating a product
 class ProductUpdate(BaseModel):
@@ -15,6 +31,7 @@ class ProductUpdate(BaseModel):
     description: Optional[str] = None
     price: Optional[float] = None
     image: Optional[str] = None
+    category: Optional[Category] = None
 
 # Define a schema for reading a product
 class Product(BaseModel):
@@ -23,6 +40,7 @@ class Product(BaseModel):
     description: str
     price: float
     image: str
+    category: Category
 
 # Define a schema for creating a user
 class UserCreate(BaseModel):
